@@ -4,14 +4,60 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useRouter } from "next/router";
+import { useState } from "react";
+import api from "@/lib/axios";
 
-export function LoginForm({
+type FormData = {
+  email: string;
+  password: string;
+};
+
+type FormErrors = {
+  email?: string;
+  password?: string;
+  general?: string;
+};
+
+export const LoginForm = ({
   className,
   ...props
-}: React.ComponentProps<"form">) {
+}: React.ComponentProps<"form">) => {
+  // const router = useRouter();
+  const [formData, setFormData] = useState<FormData>({
+    email: "",
+    password: "",
+  });
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    // console.log("data change : ", formData);
+  };
+
   const handleSubmitForm = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("data submit : ", e);
+    console.log("data submit : ", formData);
+
+    setIsLoading(true);
+
+    try {
+      // const sessionCheck = await api.get("/session-check");
+      const cookies = await api.get("/sanctum/csrf-cookie");
+      const response = await api.post("/auth/login", formData);
+
+      // console.log("Login session : ", sessionCheck);
+      console.log("Login cookies : ", cookies);
+      console.log("Login response : ", response);
+    } catch (err) {
+      console.error("Error Login : ", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
   return (
     <form
@@ -28,7 +74,15 @@ export function LoginForm({
       <div className="grid gap-6">
         <div className="grid gap-3">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="m@example.com" required />
+          <Input
+            id="email"
+            type="email"
+            placeholder="m@example.com"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
         </div>
         <div className="grid gap-3">
           <div className="flex items-center">
@@ -40,7 +94,14 @@ export function LoginForm({
               Forgot your password?
             </a>
           </div>
-          <Input id="password" type="password" required />
+          <Input
+            id="password"
+            type="password"
+            required
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+          />
         </div>
         <Button type="submit" className="w-full">
           Login
@@ -68,4 +129,4 @@ export function LoginForm({
       </div>
     </form>
   );
-}
+};
