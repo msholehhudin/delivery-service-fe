@@ -4,9 +4,10 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import api from "@/lib/axios";
+import { useAuth } from "@/context/AuthProvider";
+import { useRouter } from "next/navigation";
 
 type FormData = {
   email: string;
@@ -23,12 +24,14 @@ export const LoginForm = ({
   className,
   ...props
 }: React.ComponentProps<"form">) => {
-  // const router = useRouter();
+  const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
     email: "",
     password: "",
   });
+  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { login } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -41,24 +44,35 @@ export const LoginForm = ({
 
   const handleSubmitForm = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("data submit : ", formData);
-
+    setError(null);
     setIsLoading(true);
+    console.log("data submit : ", formData);
 
     try {
       // const sessionCheck = await api.get("/session-check");
-      const cookies = await api.get("/sanctum/csrf-cookie");
-      const response = await api.post("/auth/login", formData);
+      await login(formData.email, formData.password);
+      // const cookies = await api.get("/sanctum/csrf-cookie");
+      // const response = await api.post("/auth/login", formData);
 
-      // console.log("Login session : ", sessionCheck);
-      console.log("Login cookies : ", cookies);
-      console.log("Login response : ", response);
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirect = urlParams.get("redirect") || "/users";
+      router.push(redirect);
     } catch (err) {
       console.error("Error Login : ", err);
+      setError("Invalid Credentials. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
+
+  // useEffect(() => {
+  //   const url = new URL(window.location.href);
+  //   if (url.searchParams.get("redirect")?.includes("/(auth)")) {
+  //     url.searchParams.delete("redirect");
+  //     window.history.replaceState({}, "", url);
+  //   }
+  // }, []);
+
   return (
     <form
       className={cn("flex flex-col gap-6", className)}
@@ -103,8 +117,8 @@ export const LoginForm = ({
             onChange={handleChange}
           />
         </div>
-        <Button type="submit" className="w-full">
-          Login
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? "Loggin in..." : "Login"}
         </Button>
         {/* <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
           <span className="bg-background text-muted-foreground relative z-10 px-2">
