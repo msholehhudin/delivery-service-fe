@@ -4,15 +4,75 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useEffect, useState } from "react";
+import api from "@/lib/axios";
+import { useAuth } from "@/context/AuthProvider";
+import { useRouter } from "next/navigation";
 
-export function LoginForm({
+type FormData = {
+  email: string;
+  password: string;
+};
+
+type FormErrors = {
+  email?: string;
+  password?: string;
+  general?: string;
+};
+
+export const LoginForm = ({
   className,
   ...props
-}: React.ComponentProps<"form">) {
+}: React.ComponentProps<"form">) => {
+  const router = useRouter();
+  const [formData, setFormData] = useState<FormData>({
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const { login } = useAuth();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    // console.log("data change : ", formData);
+  };
+
   const handleSubmitForm = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("data submit : ", e);
+    setError(null);
+    setIsLoading(true);
+    console.log("data submit : ", formData);
+
+    try {
+      // const sessionCheck = await api.get("/session-check");
+      await login(formData.email, formData.password);
+      // const cookies = await api.get("/sanctum/csrf-cookie");
+      // const response = await api.post("/auth/login", formData);
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirect = urlParams.get("redirect") || "/users";
+      router.push(redirect);
+    } catch (err) {
+      console.error("Error Login : ", err);
+      setError("Invalid Credentials. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  // useEffect(() => {
+  //   const url = new URL(window.location.href);
+  //   if (url.searchParams.get("redirect")?.includes("/(auth)")) {
+  //     url.searchParams.delete("redirect");
+  //     window.history.replaceState({}, "", url);
+  //   }
+  // }, []);
+
   return (
     <form
       className={cn("flex flex-col gap-6", className)}
@@ -28,7 +88,15 @@ export function LoginForm({
       <div className="grid gap-6">
         <div className="grid gap-3">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="m@example.com" required />
+          <Input
+            id="email"
+            type="email"
+            placeholder="m@example.com"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
         </div>
         <div className="grid gap-3">
           <div className="flex items-center">
@@ -40,10 +108,17 @@ export function LoginForm({
               Forgot your password?
             </a>
           </div>
-          <Input id="password" type="password" required />
+          <Input
+            id="password"
+            type="password"
+            required
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+          />
         </div>
-        <Button type="submit" className="w-full">
-          Login
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? "Loggin in..." : "Login"}
         </Button>
         {/* <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
           <span className="bg-background text-muted-foreground relative z-10 px-2">
@@ -68,4 +143,4 @@ export function LoginForm({
       </div>
     </form>
   );
-}
+};
