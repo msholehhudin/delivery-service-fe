@@ -1,17 +1,16 @@
 import AppSidebar from "@/components/AppSidebar";
 import Navbar from "@/components/Navbar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import ProtectedRoute from "@/context/ProtectedRoute";
 
 export default function DashboardLayout({ children }: any) {
   return (
-    // <ProtectedRoute>
-    <div className="flex">
+    <SidebarProvider>
       <AppSidebar />
       <main className="w-full">
         <Navbar />
         {children}
       </main>
-    </div>
-    // </ProtectedRoute>
+    </SidebarProvider>
   );
 }
