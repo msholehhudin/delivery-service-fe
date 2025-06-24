@@ -12,6 +12,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarSeparator,
 } from "./ui/sidebar";
 import { menuItems } from "@/data";
 import Link from "next/link";
@@ -25,8 +26,11 @@ const AppSidebar = () => {
   const items = menuItems[userRole];
 
   return (
-    <Sidebar>
-      <SidebarHeader></SidebarHeader>
+    <Sidebar collapsible="icon">
+      <SidebarHeader className="py-4">
+        <SidebarMenu>Logo</SidebarMenu>
+      </SidebarHeader>
+      <SidebarSeparator />
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
