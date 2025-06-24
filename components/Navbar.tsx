@@ -18,7 +18,7 @@ import { Button } from "./ui/button";
 const Navbar = () => {
   const { setTheme } = useTheme();
   return (
-    <nav className="p-4 flex items-center justify-between">
+    <nav className="flex items-center justify-between">
       {/* LEFT */}
       Collapse{/* RIGHT */}
       <div className="flex items-center gap-4">
