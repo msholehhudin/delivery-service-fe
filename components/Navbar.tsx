@@ -18,9 +18,9 @@ import { Button } from "./ui/button";
 const Navbar = () => {
   const { setTheme } = useTheme();
   return (
-    <nav className="p-4 flex items-center justify-between border border-red-500">
+    <nav className="flex items-center justify-between">
       {/* LEFT */}
-      Collapse button test 1 w{/* RIGHT */}
+      Collapse{/* RIGHT */}
       <div className="flex items-center gap-4">
         <Link href={"/"}>Dashboard</Link>
 

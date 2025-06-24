@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Pharmacy Delivery App",
+  title: "Delivery Pharmacy App",
   description: "Build in by Revingerz, Inc.",
 };
 
