@@ -6,12 +6,22 @@ const PUBLIC_ROUTES = ['/(auth)']
 const PROTECTED_ROUTES = ['/(dashboard)', '/home', '/users'] 
 const AUTH_ROUTES = ['/login']
 
+
 export const middleware = async(request: NextRequest) => {
 
     const {pathname, searchParams} = request.nextUrl
     const cookies = request.headers.get('Cookie') || ''
 
-    console.log('user lagi di route : ', pathname)
+    if(
+        pathname.startsWith('/_next') ||
+        pathname.startsWith('/api') ||
+        pathname.includes('.')
+    ){
+        console.log('masuk ke if utama static check')
+        return NextResponse.next()
+    }
+
+    console.log('visiting : ', pathname)
 
     // Skip auth check for public routes
     if(PUBLIC_ROUTES.some(route => pathname.startsWith(route))){
@@ -29,10 +39,12 @@ export const middleware = async(request: NextRequest) => {
         isAuthenticated = false
     }
 
-    console.log('ini isAuthenticated : ', isAuthenticated)
+    console.log('this Authenticated : ', isAuthenticated)
     if(pathname === '/'){
-        const redirectPath = searchParams.get('redirect') || isAuthenticated ? '/home' : '/login'
-        return NextResponse.redirect(new URL(redirectPath, request.url))
+        const redirectPath = searchParams.get('redirect')  ?? (isAuthenticated ? '/home' : '/login')
+        if(pathname !== redirectPath){
+            return NextResponse.redirect(new URL(redirectPath, request.url))
+        }
     }
 
     // Protect dashboard routes - Redirect unauthenticated users from protected routes

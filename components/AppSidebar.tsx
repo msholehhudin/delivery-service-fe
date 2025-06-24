@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import {
   Sidebar,
@@ -13,8 +15,15 @@ import {
 } from "./ui/sidebar";
 import { menuItems } from "@/data";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthProvider";
 
 const AppSidebar = () => {
+  const { user } = useAuth();
+  const userRole = user?.role;
+
+  if (!userRole) return null;
+  const items = menuItems[userRole];
+
   return (
     <Sidebar>
       <SidebarHeader></SidebarHeader>
@@ -23,7 +32,7 @@ const AppSidebar = () => {
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
+              {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <Link href={item.url}>
