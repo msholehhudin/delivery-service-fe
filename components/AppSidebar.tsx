@@ -12,10 +12,13 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarSeparator,
 } from "./ui/sidebar";
 import { menuItems } from "@/data";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthProvider";
+import Image from "next/image";
+import { Hospital } from "lucide-react";
 
 const AppSidebar = () => {
   const { user } = useAuth();
@@ -25,8 +28,21 @@ const AppSidebar = () => {
   const items = menuItems[userRole];
 
   return (
-    <Sidebar>
-      <SidebarHeader></SidebarHeader>
+    <Sidebar collapsible="icon">
+      <SidebarHeader className="py-4">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild>
+              <Link href={"/"}>
+                {/* <Image src={"/logo.svg"} width={20} height={20} alt="logo" /> */}
+                <Hospital />
+                <span>MediXpress</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+      <SidebarSeparator />
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
