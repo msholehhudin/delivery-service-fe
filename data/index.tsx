@@ -1,3 +1,4 @@
+import { Transaction } from "@/types/transactions";
 import { UserRole } from "@/types/user";
 import {
   ArrowRightLeft,
@@ -73,3 +74,44 @@ export const menuItems: Record<UserRole, MenuItem[]> = {
     },
   ],
 };
+
+export const transactions: Transaction[] = [
+  {
+    id: 1,
+    recipient_name: "sholeh",
+    recipient_address: "jakarta",
+    recipient_phone: 1234,
+    medicine_items: [
+      { name: "Pracetamol", qty: 2 },
+      { name: "Amoxicilin", qty: 1, note: "Pagi & Malam" },
+    ],
+    delivery_date: "26 June 2025",
+    courier_id: 1,
+    status: "pending",
+    payment_status: "unpaid",
+    delivery_fee: 5000,
+    note: "Pasien rawat jalan",
+    created_by: 1,
+    created_at: "26 June 2025",
+    updated_at: "26 June 2025",
+  },
+  {
+    id: 2,
+    recipient_name: "bojes",
+    recipient_address: "pandaan",
+    recipient_phone: 1234,
+    medicine_items: [
+      { name: "Pracetamol", qty: 2 },
+      { name: "Amoxicilin", qty: 1, note: "Pagi & Malam" },
+    ],
+    delivery_date: "26 June 2025",
+    courier_id: 1,
+    status: "pending",
+    payment_status: "unpaid",
+    delivery_fee: 5000,
+    note: "Pasien rawat jalan",
+    created_by: 1,
+    created_at: "26 June 2025",
+    updated_at: "26 June 2025",
+  },
+];
