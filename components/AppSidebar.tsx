@@ -19,10 +19,12 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthProvider";
 import Image from "next/image";
 import { Hospital } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 const AppSidebar = () => {
   const { user } = useAuth();
   const userRole = user?.role;
+  const pathname = usePathname();
 
   if (!userRole) return null;
   const items = menuItems[userRole];
@@ -48,16 +50,26 @@ const AppSidebar = () => {
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {items.map((item) => {
+                const isActive = pathname.startsWith(item.url);
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      className={`${
+                        isActive
+                          ? "bg-primary/90 text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
+                          : "hover:bg-muted"
+                      } transition-colors`}
+                    >
+                      <Link href={item.url}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
